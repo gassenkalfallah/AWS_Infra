@@ -1,0 +1,194 @@
+stages:
+  - test
+  - plan
+  - features
+  - notify  
+  - apply
+  - version
+  - upload
+  - rollback
+  - destroy
+terraform validate:
+  image: 
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
+  stage: test 
+  script:
+    - terraform init
+    - terraform validate
+
+
+terraform plan:
+  image: 
+    name: hashicorp/terraform:1.1.2
+    entrypoint: [""]
+  stage: plan
+  script:
+    - terraform init 
+    - terraform plan -out=tplan 
+      
+  artifacts:
+    expire_in: 1 week 
+    paths:
+      - tplan 
+
+
+checkov:
+  stage: features
+  allow_failure: true
+  image: alpine:latest
+  script:
+    - apk add --no-cache python3 py3-pip
+    - pip install checkov==2.0.722 --ignore-installed six
+    - checkov -d . #--output json > checkov.json m
+  # artifacts:
+  #   paths:
+  #     - checkov.json
+  #   when: always
+
+
+
+
+
+infracost:
+  image: 
+  
+    name: infracost/infracost:latest
+    entrypoint: [""]
+  stage: features
+  script:
+    - infracost breakdown --path . --show-skipped --format html --out-file infracost.html 
+  artifacts:
+    paths:
+      - infracost.html
+
+
+
+      
+rover:
+  image: 
+    name: im2nguyen/rover
+    entrypoint: [""]
+  stage: features
+  script:
+    - terraform init
+    - rover -planPath tplan -genImage rover.svg
+  artifacts:
+    paths:
+      - rover.svg
+
+
+
+
+
+
+notify teams:
+  image: 
+    name: alpine:latest
+    entrypoint: [""]
+  stage: notify
+  script: 
+    - apk update
+    - apk add curl
+    - |
+      payload="{\"text\": \"Terraform Plan completed. Manual approval required for apply step. Pipeline URL: $CI_PIPELINE_URL\"}"
+    - |
+      curl -H "Content-Type: application/json" -d "$payload" $TEAMS_WEBHOOK_URL
+
+
+
+
+
+variables:
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+terraform apply:
+  image: 
+    name: hashicorp/terraform:1.1.2
+    entrypoint: [""]
+  when: manual
+  stage: apply
+  script:
+    - terraform init
+    - terraform apply  -auto-approve  tplan || (terraform destroy -auto-approve && exit 1)
+    - terraform output kubeconfig
+  environment: 
+    name: prod
+    
+
+
+
+increment_version:
+  image: alpine
+  stage: version
+  
+  script:
+    - apk add bash
+    - apk add git
+    - apk add curl
+    - apk add jq
+    - chmod +x increment-version.sh
+    - git config --global user.email jenkins@spark-it.fr
+    - git config --global user.name jenkins
+    - bash increment-version.sh $type
+    - ls
+    - git remote set-url --push origin https://oauth2:$TOKEN_GITLAB@gitlab.spark.local/infra/Stagiaires/aws.git
+    - git add VERSION.txt
+    - git commit -m "Incremented version" 
+    - git push  origin HEAD:master 
+  artifacts:
+    paths:
+      - VERSION.txt
+  when: manual
+
+
+
+
+upload:
+  image: alpine
+  stage: upload
+  
+  script:
+    - apk add curl zip
+    - apk add bash
+    - apk add jq
+    - chmod +x increment-version.sh
+    - ls -l 
+    - VERSION=$(cat VERSION.txt)
+    - zip -r terraform-project.zip . -i "*.tf"
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file terraform-project.zip https://gitlab.spark.local/api/v4/projects/$CI_PROJECT_ID/packages/generic/terraform-project-$VERSION/$VERSION/terraform-project.$VERSION.zip | jq '
+    - ls
+    - echo $CI_PROJECT_ID
+    - echo $CI_JOB_TOKEN
+    - echo $VERSION
+
+
+
+
+terraform rollback:
+  image:
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
+  when: manual
+  stage: rollback
+  script:
+    - apk add unzip # Install unzip utility
+    - apk add curl
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" https://gitlab.spark.local/api/v4/projects/$CI_PROJECT_ID/packages/generic/terraform-project-$ROLLBACK_VERSION/$ROLLBACK_VERSION/terraform-project.$ROLLBACK_VERSION.zip --output terraform-project.zip
+    - unzip -o terraform-project.zip
+    - terraform init
+    - terraform apply -auto-approve 
+
+
+terraform destroy:
+  image: 
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
+  when: manual
+  stage: destroy 
+  script:
+    - terraform init
+    - terraform destroy -auto-approve
+
+
