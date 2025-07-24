@@ -37,6 +37,7 @@ My goal was to deliver a **scalable, secure, and fully automated cloud infrastru
 - Created GitLab workspaces and repositories
 - Automated version control and deployment of infrastructure
 - Integrated GitLab CI with Terraform for IaC changes
+
 📸 **GitLab workspaces + IaC flow**: 
 ![Terraform pipeline](images/pipeline.png)
 
