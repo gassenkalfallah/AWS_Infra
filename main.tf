@@ -7,7 +7,7 @@ provider "aws" {
 #     address = "https://gitlab.spark.local/api/v4/projects/infra%2FStagiaires%2Faws/terraform/state/terraform.tfstate"
     
 #     username = "gitlab"
-#     password = "glpat-DjxP2jMzGEbBrZ7BHRtx"
+#     password = "****************"
 #   }
 # }
 
@@ -82,7 +82,7 @@ module "eks" {
 
 #     command = <<EOF
 
-#     aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 949351973512.dkr.ecr.eu-west-3.amazonaws.com
+#     aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin ***********************
 #     kubectl create secret docker-registry ecr-registry --docker-server=949351973512.dkr.ecr.eu-west-3.amazonaws.com --docker-username=AWS --docker-password="$(aws ecr get-login-password --region eu-west-3)" --docker-email=unusedb
 
 #     EOF

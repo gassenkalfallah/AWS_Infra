@@ -2,7 +2,7 @@
 # ☁️ DevOps Cloud Migration Internship Project
 
 **Migration of a DevOps Solution to the Cloud**  
-📍 Final Year Engineering Internship | ENIS x Spark-IT | 2023  
+📍 Final Year Engineering Internship | ENIS | 2023  
 🛠️ Implemented by: [Ghassen Khalfallah](https://www.linkedin.com/in/ghassenkhalfallah)
 
 ---
@@ -29,6 +29,7 @@ My goal was to deliver a **scalable, secure, and fully automated cloud infrastru
 - Managed VPC, EC2, S3, IAM
 
 📸 **AWS architecture diagram**: 
+![Cloud Architecture](images/aws.png)
 
 ---
 
@@ -36,6 +37,8 @@ My goal was to deliver a **scalable, secure, and fully automated cloud infrastru
 - Created GitLab workspaces and repositories
 - Automated version control and deployment of infrastructure
 - Integrated GitLab CI with Terraform for IaC changes
+📸 **GitLab workspaces + IaC flow**: 
+![Terraform pipeline](images/pipeline.png)
 
 
 ---
@@ -45,7 +48,9 @@ My goal was to deliver a **scalable, secure, and fully automated cloud infrastru
 - Deployed services: frontend, backend, database, PHPMyAdmin
 - Implemented CI/CD pipeline from GitLab to Kubernetes (EKS)
 
-📸 **Screenshot suggestion**: Slide 23–25 – Kubernetes pods and services architecture
+📸 **Kubernetes pods and services architecture**:
+![APP ARCH](images/arch.png)
+
 
 ---
 
@@ -54,7 +59,9 @@ My goal was to deliver a **scalable, secure, and fully automated cloud infrastru
 - Covered full disaster recovery lifecycle: snapshotting, compression, storage, and restore workflows
 - Ensured reliable recovery of Kubernetes workloads in case of infrastructure failure
 
-📸 **Screenshot suggestion**: Slide 29 or 30 – Backup & restore lifecycle flow
+📸 **Backup & restore lifecycle flow**:
+![Backup](images/backup.png)
+
 
 ---
 
@@ -82,7 +89,6 @@ The architecture follows a **modular DevOps structure** with:
 - CI/CD workflows for deployment + testing
 - Integrated backup/recovery workflows
 
-📸 **Screenshot suggestion**: Slide 22 and 30
 
 ---
 
@@ -96,30 +102,9 @@ The architecture follows a **modular DevOps structure** with:
 
 ✅ Tools and workflows are reusable for future projects
 
----
-
-## 📸 Recommended Screenshot Summary
-
-| Slide # | Description                          |
-|---------|--------------------------------------|
-| 17 or 22| AWS infrastructure architecture      |
-| 20      | GitLab + IaC pipeline view           |
-| 23–25   | Kubernetes pods/services architecture|
-| 29–30   | Velero backup & recovery workflow    |
-
-Place these in `/images/` and embed with:
-```markdown
-![Alt text](images/your_image_name.png)
-```
 
 ---
 
-## 🤝 Acknowledgments
-
-- **Host Company**: Spark-IT (Sfax)
-- **School**: École Nationale d’Ingénieurs de Sfax (ENIS)
-
----
 
 ## 📬 Contact
 
